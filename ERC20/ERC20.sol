@@ -50,18 +50,18 @@ contract MyToken is ERC20Interface {
         
         // Make sure the user's balance is sufficient
         // (otherwise throw)
-        uint amount_needed = _num_tokens * 1000;
-        require(_accountBalances[msg.sender] >= amount_needed && _totalSupply >= _num_tokens, "Insufficient user/reserve balance");
+        require(_accountBalances[msg.sender] >= _num_tokens && _totalSupply >= _num_tokens, "Insufficient user/reserve balance");
         // Adjust data structures appropriately
-        _accountBalances[msg.sender] -= amount_needed;
+        _accountBalances[msg.sender] -= _num_tokens;
         _totalSupply -= _num_tokens;
         // Send appropriate amount of Ether from contract's reserves
         // (throw if send fails)
-        (success, ) = msg.sender.call{value: amount_needed}("");
+        (success, ) = msg.sender.call{value: _num_tokens}("");
+        require(success, "Transfer failed!");
         // Emit a {Transfer} event with `to` set to the zero address 0x0 (represents burning of tokens in spec)
         emit Transfer(msg.sender, address(0x0), _num_tokens);
 
-        return success;
+        return true;
     }
     
     function totalSupply() public view virtual override returns (uint256 total_supply) {
