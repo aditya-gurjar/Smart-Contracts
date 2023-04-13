@@ -56,12 +56,12 @@ contract MyToken is ERC20Interface {
         _totalSupply -= _num_tokens;
         // Send appropriate amount of Ether from contract's reserves
         // (throw if send fails)
-        (success, ) = msg.sender.call{value: _num_tokens}("");
+        (success, ) = msg.sender.call{value: _num_tokens * 1000}("");
         require(success, "Transfer failed!");
         // Emit a {Transfer} event with `to` set to the zero address 0x0 (represents burning of tokens in spec)
         emit Transfer(msg.sender, address(0x0), _num_tokens);
 
-        return true;
+        return success;
     }
     
     function totalSupply() public view virtual override returns (uint256 total_supply) {
