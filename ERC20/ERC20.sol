@@ -26,7 +26,7 @@ contract MyToken is ERC20Interface {
     
     uint256 private _totalSupply = 0;
 
-    string constant public name = "name"; // TODO CHANGE THIS!
+    string constant public name = "ag2236"; // TODO CHANGE THIS!
 
     function deposit() public virtual override payable {
         // check that deposit doesn't overflow total_supply
@@ -50,13 +50,18 @@ contract MyToken is ERC20Interface {
         
         // Make sure the user's balance is sufficient
         // (otherwise throw)
-
+        uint amount_needed = _num_tokens * 1000;
+        require(_accountBalances[msg.sender] >= amount_needed && _totalSupply >= _num_tokens, "Insufficient user/reserve balance");
         // Adjust data structures appropriately
-
+        _accountBalances[msg.sender] -= amount_needed;
+        _totalSupply -= _num_tokens;
         // Send appropriate amount of Ether from contract's reserves
         // (throw if send fails)
-
+        (success, ) = msg.sender.call{value: amount_needed}("");
         // Emit a {Transfer} event with `to` set to the zero address 0x0 (represents burning of tokens in spec)
+        emit Transfer(msg.sender, address(0x0), _num_tokens);
+
+        return success;
     }
     
     function totalSupply() public view virtual override returns (uint256 total_supply) {
